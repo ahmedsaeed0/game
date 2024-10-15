@@ -8,32 +8,28 @@ import Info from './icons/Info';
 import Mine from './icons/Mine';
 import Friends from './icons/Friends';
 import Coins from './icons/Coins';
+interface TelegramWindow extends Window {
+  Telegram?: {
+    WebApp: {
+      initDataUnsafe: {
+        user?: {
+          id: number;
+        };
+      };
+      sendData: (data: string) => void;
+    };
+  };
+}
+
+declare const window: TelegramWindow;
 
 const HomePage: React.FC = () => {
   const levelNames = [
-    "Bronze",    // From 0 to 4999 coins
-    "Silver",    // From 5000 coins to 24,999 coins
-    "Gold",      // From 25,000 coins to 99,999 coins
-    "Platinum",  // From 100,000 coins to 999,999 coins
-    "Diamond",   // From 1,000,000 coins to 2,000,000 coins
-    "Epic",      // From 2,000,000 coins to 10,000,000 coins
-    "Legendary", // From 10,000,000 coins to 50,000,000 coins
-    "Master",    // From 50,000,000 coins to 100,000,000 coins
-    "GrandMaster", // From 100,000,000 coins to 1,000,000,000 coins
-    "Lord"       // From 1,000,000,000 coins to ∞
+    "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Epic", "Legendary", "Master", "GrandMaster", "Lord"
   ];
 
   const levelMinPoints = [
-    0,        // Bronze
-    5000,     // Silver
-    25000,    // Gold
-    100000,   // Platinum
-    1000000,  // Diamond
-    2000000,  // Epic
-    10000000, // Legendary
-    50000000, // Master
-    100000000,// GrandMaster
-    1000000000// Lord
+    0, 5000, 25000, 100000, 1000000, 2000000, 10000000, 50000000, 100000000, 1000000000
   ];
 
   const [levelIndex, setLevelIndex] = useState(6);
@@ -41,18 +37,29 @@ const HomePage: React.FC = () => {
   const [clicks, setClicks] = useState<{ id: number, x: number, y: number }[]>([]);
   const pointsToAdd = 11;
   const profitPerHour = 126420;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
   useEffect(() => {
     const updateCountdowns = () => {
-     
+      // يمكنك إضافة أي توقيت أو عد تنازلي هنا.
     };
 
     updateCountdowns();
-    const interval = setInterval(updateCountdowns, 60000); // Update every minute
-
+    const interval = setInterval(updateCountdowns, 60000); // يتم التحديث كل دقيقة
     return () => clearInterval(interval);
   }, []);
+
+  const sendPointsToBot = (newPoints: number) => {
+    // هنا نقوم بإرسال البيانات إلى البوت
+    if (window.Telegram && window.Telegram.WebApp) {
+      const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id; // نحصل على chat_id الخاص بالمستخدم
+      window.Telegram.WebApp.sendData(
+        JSON.stringify({
+          points: newPoints,
+          chat_id: chatId
+        })
+      );
+    }
+  };
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
@@ -64,8 +71,12 @@ const HomePage: React.FC = () => {
       card.style.transform = '';
     }, 100);
 
-    setPoints(points + pointsToAdd);
+    const newPoints = points + pointsToAdd;
+    setPoints(newPoints);
     setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
+
+    // إرسال النقاط والـ chat_id للبوت
+    sendPointsToBot(newPoints);
   };
 
   const handleAnimationEnd = (id: number) => {
@@ -151,7 +162,6 @@ const HomePage: React.FC = () => {
         <div className="flex-grow mt-4 bg-[#f3ba2f] rounded-t-[48px] relative top-glow z-0">
           <div className="absolute top-[2px] left-0 right-0 bottom-0 bg-[#1d2025] rounded-t-[46px]">
             <div className="px-4 mt-6 flex justify-between gap-2">
-            
             </div>
 
             <div className="px-4 mt-4 flex justify-center">
@@ -207,9 +217,7 @@ const MinePage: React.FC = () => {
     <div className="bg-black text-white h-screen flex justify-center items-center">
       <h1>Mine Page</h1>
       <p>This is the mining section where you can mine coins.</p>
-      
     </div>
-    
   );
 };
 
@@ -235,16 +243,14 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="App">
-        {/* مكان عرض المحتويات */}
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/friends" element={<FriendsPage />} />
           <Route path="/mine" element={<MinePage />} />
-          <Route path="/" element={<ExchangePage />} />
+          <Route path="/exchange" element={<ExchangePage />} />
           <Route path="/earn" element={<EarnPage />} />
         </Routes>
 
-        {/* القائمة الثابتة في الأسفل */}
         <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-[calc(100%-2rem)] max-w-xl bg-[#272a2f] flex justify-around items-center z-50 rounded-3xl text-xs">
           <div className="text-center text-[#85827d] w-1/5">
             <Link to="/">
