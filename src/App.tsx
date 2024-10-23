@@ -54,7 +54,7 @@ const HomePage: React.FC = () => {
         const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;  // الحصول على chat_id من تيليجرام
         if (chatId) {
           try {
-            const response = await fetch(`/get_user_data/${chatId}`);  // طلب البيانات من السيرفر
+            const response = await fetch(`http://plask.farsa.sa:5002/get_user_data/${chatId}`);  // طلب البيانات من السيرفر
             if (response.ok) {
               const data = await response.json();
               setPoints(data.reward_points);  // تحديث النقاط بناءً على البيانات المستلمة
@@ -75,17 +75,43 @@ const HomePage: React.FC = () => {
     fetchData();
   }, []);
 
-  const sendPointsToBot = (newPoints: number) => {
+  const sendPointsToBot = async (newPoints: number) => {
+    // تحقق من وجود Telegram WebApp API
     if (window.Telegram && window.Telegram.WebApp) {
       const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;
-      window.Telegram.WebApp.sendData(
-        JSON.stringify({
-          points: newPoints,
-          chat_id: chatId
-        })
-      );
+  
+      if (chatId) {
+        try {
+          // إرسال النقاط و chat_id إلى الخادم الخلفي باستخدام fetch
+          const response = await fetch('http://plask.farsa.sa:5002/updatePoints', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chat_id: chatId,
+              points: newPoints,
+            }),
+          });
+  
+          const data = await response.json();
+  
+          if (response.ok) {
+            console.log('Points updated successfully:', data);
+          } else {
+            console.error('Error updating points:', data.message);
+          }
+        } catch (error) {
+          console.error('Error updating points:', error);
+        }
+      } else {
+        console.error('chat_id not found');
+      }
+    } else {
+      console.error('Telegram WebApp is not available');
     }
   };
+  
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
