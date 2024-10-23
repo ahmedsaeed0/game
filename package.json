@@ -1,7 +1,8 @@
 {
-  "name": "hamster-kombat-telegram-mini-app-clone",
+  "name": "ajaw_coin",
+  "proxy": "http://plask.farsa.sa:5002",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

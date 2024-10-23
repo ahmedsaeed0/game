@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
-// import Hamster from './icons/Hamster';
 import { binanceLogo, dollarCoin, mainCharacter } from './images';
 import Info from './icons/Info';
-// import Settings from './icons/Settings';
 import Mine from './icons/Mine';
 import Friends from './icons/Friends';
 import Coins from './icons/Coins';
+
 interface TelegramWindow extends Window {
   Telegram?: {
     WebApp: {
@@ -48,10 +47,37 @@ const HomePage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // جلب بيانات المستخدم من السيرفر (Flask)
+  useEffect(() => {
+    const fetchData = async () => {
+      if (window.Telegram && window.Telegram.WebApp) {
+        const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;  // الحصول على chat_id من تيليجرام
+        if (chatId) {
+          try {
+            const response = await fetch(`/get_user_data/${chatId}`);  // طلب البيانات من السيرفر
+            if (response.ok) {
+              const data = await response.json();
+              setPoints(data.reward_points);  // تحديث النقاط بناءً على البيانات المستلمة
+            } else {
+              console.error('Failed to fetch user data');
+            }
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+          }
+        } else {
+          console.error('No chat_id available.');
+        }
+      } else {
+        console.error('Telegram WebApp is not available.');
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const sendPointsToBot = (newPoints: number) => {
-    // هنا نقوم بإرسال البيانات إلى البوت
     if (window.Telegram && window.Telegram.WebApp) {
-      const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id; // نحصل على chat_id الخاص بالمستخدم
+      const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;
       window.Telegram.WebApp.sendData(
         JSON.stringify({
           points: newPoints,
@@ -75,7 +101,6 @@ const HomePage: React.FC = () => {
     setPoints(newPoints);
     setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
 
-    // إرسال النقاط والـ chat_id للبوت
     sendPointsToBot(newPoints);
   };
 
@@ -123,9 +148,7 @@ const HomePage: React.FC = () => {
       <div className="w-full bg-black text-white h-screen font-bold flex flex-col max-w-xl">
         <div className="px-4 z-10">
           <div className="flex items-center space-x-2 pt-4">
-            <div className="p-1 rounded-lg bg-[#1d2025]">
-              {/* <Hamster size={24} className="text-[#d4d4d4]" /> */}
-            </div>
+            <div className="p-1 rounded-lg bg-[#1d2025]"></div>
             <div>
               <p className="text-sm">ajaw </p>
             </div>
@@ -161,8 +184,7 @@ const HomePage: React.FC = () => {
 
         <div className="flex-grow mt-4 bg-[#f3ba2f] rounded-t-[48px] relative top-glow z-0">
           <div className="absolute top-[2px] left-0 right-0 bottom-0 bg-[#1d2025] rounded-t-[46px]">
-            <div className="px-4 mt-6 flex justify-between gap-2">
-            </div>
+            <div className="px-4 mt-6 flex justify-between gap-2"></div>
 
             <div className="px-4 mt-4 flex justify-center">
               <div className="px-4 py-2 flex items-center space-x-2">
