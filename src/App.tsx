@@ -53,6 +53,8 @@ const HomePage: React.FC = () => {
       if (window.Telegram && window.Telegram.WebApp) {
         const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;  
         console.log(chatId);
+        console.log(window.Telegram.WebApp.initDataUnsafe);
+
         // الحصول على chat_id من تيليجرام
         if (chatId) {
           try {
