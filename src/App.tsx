@@ -54,22 +54,21 @@ const HomePage: React.FC = () => {
         const userId = window.Telegram.WebApp.initDataUnsafe.user?.id;  
         console.log("User ID:", userId);
   
-        // التأكد من وجود userId
         if (userId) {
           try {
-            // استدعاء API للحصول على chat_id باستخدام userId
+            console.log("Fetching chat ID...");
             const chatIdResponse = await fetch(`http://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`);
             if (chatIdResponse.ok) {
               const chatIdData = await chatIdResponse.json();
               const chatId = chatIdData.chat_id;
-  
               console.log("Chat ID:", chatId);
   
-              // التأكد من وجود chat_id ثم جلب بيانات المستخدم
               if (chatId) {
+                console.log("Fetching user data...");
                 const userDataResponse = await fetch(`http://plask.farsa.sa:5002/get_user_data/${chatId}`);
                 if (userDataResponse.ok) {
                   const userData = await userDataResponse.json();
+                  console.log("User Data:", userData);
                   setPoints(userData.reward_points);  // تحديث النقاط بناءً على البيانات المستلمة
                 } else {
                   console.error('Failed to fetch user data');
@@ -93,7 +92,6 @@ const HomePage: React.FC = () => {
   
     fetchData();
   }, []);
-
   const sendPointsToBot = async (newPoints: number) => {
     // تحقق من وجود Telegram WebApp API
     if (window.Telegram && window.Telegram.WebApp) {
