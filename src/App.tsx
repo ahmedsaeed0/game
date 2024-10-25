@@ -58,7 +58,7 @@ const HomePage: React.FC = () => {
         if (userId) {
           try {
             // استدعاء API للحصول على chat_id باستخدام userId
-            const chatIdResponse = await fetch(`http://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`);
+            const chatIdResponse = await fetch(`https://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`);
             if (chatIdResponse.ok) {
               const chatIdData = await chatIdResponse.json();
               const chatId = chatIdData.chat_id;
@@ -67,7 +67,7 @@ const HomePage: React.FC = () => {
   
               // التأكد من وجود chat_id ثم جلب بيانات المستخدم
               if (chatId) {
-                const userDataResponse = await fetch(`http://plask.farsa.sa:5002/get_user_data/${chatId}`);
+                const userDataResponse = await fetch(`https://plask.farsa.sa:5002/get_user_data/${chatId}`);
                 if (userDataResponse.ok) {
                   const userData = await userDataResponse.json();
                   setPoints(userData.reward_points);  // تحديث النقاط بناءً على البيانات المستلمة
@@ -102,7 +102,7 @@ const HomePage: React.FC = () => {
       if (chatId) {
         try {
           // إرسال النقاط و chat_id إلى الخادم الخلفي باستخدام fetch
-          const response = await fetch('http://plask.farsa.sa:5002/updatePoints', {
+          const response = await fetch('https://plask.farsa.sa:5002/updatePoints', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
