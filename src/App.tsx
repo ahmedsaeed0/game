@@ -51,7 +51,9 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (window.Telegram && window.Telegram.WebApp) {
-        const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;  // الحصول على chat_id من تيليجرام
+        const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;  
+        console.log(chatId);
+        // الحصول على chat_id من تيليجرام
         if (chatId) {
           try {
             const response = await fetch(`http://plask.farsa.sa:5002/get_user_data/${chatId}`);  // طلب البيانات من السيرفر
