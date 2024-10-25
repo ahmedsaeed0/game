@@ -51,31 +51,46 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (window.Telegram && window.Telegram.WebApp) {
-        const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;  
-        console.log(chatId);
-        console.log(window.Telegram.WebApp.initDataUnsafe);
-
-        // الحصول على chat_id من تيليجرام
-        if (chatId) {
+        const userId = window.Telegram.WebApp.initDataUnsafe.user?.id;  
+        console.log("User ID:", userId);
+  
+        // التأكد من وجود userId
+        if (userId) {
           try {
-            const response = await fetch(`http://plask.farsa.sa:5002/get_user_data/${chatId}`);  // طلب البيانات من السيرفر
-            if (response.ok) {
-              const data = await response.json();
-              setPoints(data.reward_points);  // تحديث النقاط بناءً على البيانات المستلمة
+            // استدعاء API للحصول على chat_id باستخدام userId
+            const chatIdResponse = await fetch(`http://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`);
+            if (chatIdResponse.ok) {
+              const chatIdData = await chatIdResponse.json();
+              const chatId = chatIdData.chat_id;
+  
+              console.log("Chat ID:", chatId);
+  
+              // التأكد من وجود chat_id ثم جلب بيانات المستخدم
+              if (chatId) {
+                const userDataResponse = await fetch(`http://plask.farsa.sa:5002/get_user_data/${chatId}`);
+                if (userDataResponse.ok) {
+                  const userData = await userDataResponse.json();
+                  setPoints(userData.reward_points);  // تحديث النقاط بناءً على البيانات المستلمة
+                } else {
+                  console.error('Failed to fetch user data');
+                }
+              } else {
+                console.error('Chat ID not found for the specified user ID');
+              }
             } else {
-              console.error('Failed to fetch user data');
+              console.error('Failed to fetch chat ID');
             }
           } catch (error) {
-            console.error('Error fetching user data:', error);
+            console.error('Error fetching chat ID:', error);
           }
         } else {
-          console.error('No chat_id available.');
+          console.error('No user ID available.');
         }
       } else {
         console.error('Telegram WebApp is not available.');
       }
     };
-
+  
     fetchData();
   }, []);
 
