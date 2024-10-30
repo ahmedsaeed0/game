@@ -57,7 +57,7 @@ const HomePage: React.FC = () => {
         if (userId) {
           try {
             console.log("Fetching chat ID...");
-            const chatIdResponse = await fetch(`http://plask.farsa.sa:5002/get_chat_id/${userId}`);
+            const chatIdResponse = await fetch(`http://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`);
             if (chatIdResponse.ok) {
               const chatIdData = await chatIdResponse.json();
               const chatId = chatIdData.chat_id;
