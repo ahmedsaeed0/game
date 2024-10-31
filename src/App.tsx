@@ -93,6 +93,7 @@ const HomePage: React.FC = () => {
     fetchData();
   }, []);
   const sendPointsToBot = async (newPoints: number) => {
+    console.log(newPoints);
     // تحقق من وجود Telegram WebApp API
     if (window.Telegram && window.Telegram.WebApp) {
       const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;
@@ -100,7 +101,7 @@ const HomePage: React.FC = () => {
       if (chatId) {
         try {
           // إرسال النقاط و chat_id إلى الخادم الخلفي باستخدام fetch
-          const response = await fetch('https://plask.farsa.sa:5002/updatePoints', {
+          const response = await fetch('https://plask.farsa.sa:5002/update_points', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
