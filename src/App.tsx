@@ -97,6 +97,7 @@ const HomePage: React.FC = () => {
     // تحقق من وجود Telegram WebApp API
     if (window.Telegram && window.Telegram.WebApp) {
       const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;
+      console.log(chatId);
   
       if (chatId) {
         try {
@@ -269,14 +270,42 @@ const HomePage: React.FC = () => {
   );
 };
 
+interface User {
+  user_id: number;
+  first_name: string;
+  reward_points: number;
+}
+
 const FriendsPage: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
+
+  // جلب بيانات المستخدمين عند تحميل الصفحة
+  useEffect(() => {
+    fetch("https://plask.farsa.sa:5002/get_users")
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error("Error fetching users:", error));
+  }, []);
+
   return (
-    <div className="bg-black text-white h-screen flex justify-center items-center">
-      <h1>Friends Page</h1>
-      <p>This is the Friends section where you can see your friends.</p>
+    <div className="bg-black text-white h-screen flex flex-col justify-center items-center space-y-4">
+      <h1 className="text-2xl font-bold">Friends Page</h1>
+      <p className="mb-6">This is the Friends section where you can see your friends' points.</p>
+      <div className="space-y-2 w-3/4">
+        {users.map((user) => (
+          <div
+            key={user.user_id}
+            className="bg-gray-800 p-4 rounded-md flex justify-between items-center shadow-md"
+          >
+            <span className="text-lg font-semibold">{user.first_name}</span>
+            <span className="text-lg">{user.reward_points} Points</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
+
 
 const MinePage: React.FC = () => {
   return (
