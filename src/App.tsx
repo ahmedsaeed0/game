@@ -289,42 +289,21 @@ const FriendsPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-b from-gray-800 to-black text-white h-screen flex flex-col items-center">
-    <div className="flex flex-col items-center mt-10">
-      <img
-        src="/path/to/hamster.png" // استبدل هذا المسار بالصورة المطلوبة للرمز الشخصي
-        alt="Hamster Avatar"
-        className="w-24 h-24 rounded-full shadow-lg mb-2"
-      />
-      <h2 className="text-3xl font-bold">Lord</h2>
-      <p className="text-gray-400">from 1B+</p>
-    </div>
-    
-    <div className="mt-6 space-y-4 w-11/12">
-      {users.map((user, index) => (
-        <div
-          key={user.user_id}
-          className="bg-gray-700 p-4 rounded-lg flex items-center justify-between shadow-lg"
-        >
-          <div className="flex items-center space-x-4">
-            <span className="text-lg font-semibold">{index + 1}</span>
-            <img
-              src="/path/to/user-avatar.png" // ضع مسار لصورة المستخدم
-              alt="User Avatar"
-              className="w-10 h-10 rounded-full"
-            />
+    <div className="bg-black text-white h-screen flex flex-col justify-center items-center space-y-4">
+      {/* <h1 className="text-2xl font-bold">Friends Page</h1> */}
+      {/* <p className="mb-6">This is the Friends section where you can see your friends' points.</p>/ */}
+      <div className="space-y-2 w-3/4">
+        {users.map((user) => (
+          <div
+            key={user.user_id}
+            className="bg-gray-800 p-4 rounded-md flex justify-between items-center shadow-md">
             <span className="text-lg font-semibold">{user.first_name}</span>
+            <span className="text-lg font-semibold">{user.user_id}</span>
+            <span className="text-lg">{user.reward_points} user</span>
           </div>
-          <span className="text-lg font-semibold">
-            {user.reward_points.toLocaleString()} 💰
-          </span>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
-  
-   
-  </div>
-  
   );
 };
 
