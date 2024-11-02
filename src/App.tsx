@@ -297,7 +297,8 @@ const FriendsPage: React.FC = () => {
             key={user.user_id}
             className="bg-gray-800 p-4 rounded-md flex justify-between items-center shadow-md">
             <span className="text-lg font-semibold">{user.first_name}</span>
-            <span className="text-lg">{user} Points</span>
+            <span className="text-lg font-semibold">{user.user_id}</span>
+            <span className="text-lg">{user.reward_points} Points</span>
           </div>
         ))}
       </div>
