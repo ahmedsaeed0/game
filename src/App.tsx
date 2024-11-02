@@ -292,8 +292,8 @@ const FriendsPage: React.FC = () => {
     <div className="bg-gradient-to-b from-gray-800 to-black text-white h-screen flex flex-col items-center">
     <div className="flex flex-col items-center mt-10">
       <img
-        src="/path/to/hamster.png" // استبدل هذا المسار بالصورة المطلوبة
-        alt=""
+        src="/path/to/hamster.png" // استبدل هذا المسار بالصورة المطلوبة للرمز الشخصي
+        alt="Hamster Avatar"
         className="w-24 h-24 rounded-full shadow-lg mb-2"
       />
       <h2 className="text-3xl font-bold">Lord</h2>
@@ -321,18 +321,10 @@ const FriendsPage: React.FC = () => {
         </div>
       ))}
     </div>
-
-    <div className="fixed bottom-0 w-full bg-black py-4 flex justify-around">
-      <button className="text-yellow-500">Exchange</button>
-      <button className="text-gray-400">Mine</button>
-      <button className="text-gray-400">Friends</button>
-      <button className="text-gray-400">Earn</button>
-      <button className="text-yellow-500">Airdrop</button>
-    </div>
+  
+   
   </div>
-
-
-
+  
   );
 };
 
