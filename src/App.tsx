@@ -272,7 +272,9 @@ const HomePage: React.FC = () => {
 
 interface User {
   user_id: number;
-  first_name: string;
+  name: string;         // تأكد من إضافة هذا الحقل
+  username: string;
+  points: number;
   reward_points: number;
 }
 
@@ -283,19 +285,18 @@ const FriendsPage: React.FC = () => {
     fetch("https://plask.farsa.sa:5002/get_users")
       .then((response) => response.json())
       .then((data) => {
-        // تحويل المصفوفات إلى كائنات
+        // تحويل المصفوفات إلى كائنات مع التحقق من القيم
         const usersData = data.map((user: any) => ({
-          user_id: user[0],
-          name: user[1],
-          username: user[2],
-          points: user[3],
-          reward_points: user[4],
+          user_id: user[0] || 0, // تعيين قيمة افتراضية إذا لم تكن موجودة
+          name: user[1] || "No Name", // تعيين "No Name" إذا لم يكن هناك اسم
+          username: user[2] || "Unknown", // تعيين "Unknown" إذا لم يكن هناك اسم مستخدم
+          points: user[3] || 0, // تعيين 0 إذا لم تكن هناك نقاط
+          reward_points: user[4] || 0, // تعيين 0 إذا لم تكن هناك نقاط مكافأة
         }));
         setUsers(usersData);
       })
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
-
   return (
     <div className="bg-black text-white h-screen flex flex-col justify-center items-center space-y-4">
       <div className="space-y-2 w-3/4">
@@ -305,9 +306,9 @@ const FriendsPage: React.FC = () => {
               key={user.user_id}
               className="bg-gray-800 p-4 rounded-md flex justify-between items-center shadow-md"
             >
-              <span className="text-lg font-semibold">{index + 1}</span>
-              <span className="text-lg font-semibold">{user.first_name}</span>
-              <span className="text-lg">{user.reward_points} 💰</span>
+           <span className="text-lg font-semibold">{index + 1}</span>
+              <span className="text-lg font-semibold">{user.name}</span>
+              <span className="text-lg">{user.reward_points.toLocaleString()} 💰</span>
             </div>
           ))
         ) : (
