@@ -330,9 +330,9 @@ const FriendsPage: React.FC = () => {
     <div className="bg-black text-white h-screen flex flex-col justify-start  items-center space-y-4">
         <div className="w-[200px] h-[200x] rounded-full circle-inner top_page">
                   <img src={mainCharacter} alt="Main Character" className="w-[200px] h-[200x" />
-               
+                  </div>
         <h3 className='title'>Top Score </h3>
-        </div>
+        
       <div className="space-y-2 w-3/4">
         {users.length > 0 ? (
           users.map((user, index) => (

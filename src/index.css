@@ -17,8 +17,8 @@ body {
 .title{
     font-size: 30px;
     text-align: center;
-    padding: 20px;
-    margin-top: 10px;
+    padding: 10px;
+    margin-top: 5px;
 }
 .round{
     border-radius: 30px;
