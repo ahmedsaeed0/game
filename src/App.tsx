@@ -276,14 +276,6 @@ interface User {
   reward_points: number;
 }
 
-import React, { useEffect, useState } from 'react';
-
-interface User {
-  user_id: string;
-  first_name: string;
-  reward_points: number;
-}
-
 const FriendsPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
 
