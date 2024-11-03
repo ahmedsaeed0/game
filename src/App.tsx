@@ -279,34 +279,7 @@ interface User {
 }
 
 const FriendsPage: React.FC = () => {
-  
 
-
-//   return (
-//     <div className="bg-black text-white h-screen flex flex-col justify-start  items-center space-y-4">
-//       <div>
-        
-//         <div className="w-[200px] h-[200x] rounded-full circle-inner top_page">
-//                   <img src={mainCharacter} alt="Main Character" className="w-[200px] h-[200x" />
-//                   <h3></h3>
-//                 </div>
-//         <h3 className='title'>Top Score </h3>
-//       </div>
-//       <div className="space-y-2 w-3/4">
-      
-//             <div className="bg-gray-800 p-4 rounded-md flex justify-around items-center shadow-md round" >
-//             <img src={dollarCoin}  className="w-[50px] h-[50x]" alt="" />
-//               <span className="text-lg font-semibold">شاةثي</span>
-//               <span className="text-lg">32423434</span>
-//             </div>
-          
-        
-          
-        
-//       </div>
-//     </div>
-//   );
-// };
 
   const [users, setUsers] = useState<User[]>([]);
 
@@ -314,18 +287,19 @@ const FriendsPage: React.FC = () => {
     fetch("https://plask.farsa.sa:5002/get_users")
       .then((response) => response.json())
       .then((data) => {
-        // تحويل المصفوفات إلى كائنات مع التحقق من القيم
         const usersData = data.map((user: any) => ({
-          user_id: user[0] || 0, // تعيين قيمة افتراضية إذا لم تكن موجودة
-          name: user[1] || "No Name", // تعيين "No Name" إذا لم يكن هناك اسم
-          username: user[2] || "Unknown", // تعيين "Unknown" إذا لم يكن هناك اسم مستخدم
-          points: user[3] || 0, // تعيين 0 إذا لم تكن هناك نقاط
-          reward_points: user[4] || 0, // تعيين 0 إذا لم تكن هناك نقاط مكافأة
+          user_id: user[0] || 0,
+          name: user[1] || "No Name",
+          reward_points: user[4] || 0,
         }));
-        setUsers(usersData);
+        
+        // فرز المستخدمين حسب النقاط بترتيب تنازلي واختيار أعلى 5 فقط
+        const topUsers = usersData.sort((a: User, b: User) => b.reward_points - a.reward_points).slice(0, 5);
+        setUsers(topUsers);
       })
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
+
   return (
     <div className="bg-black text-white min-h-screen flex flex-col items-center pt-10 pb-10">
       {/* صورة الشخصية الرئيسية */}
