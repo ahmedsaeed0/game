@@ -327,7 +327,7 @@ const FriendsPage: React.FC = () => {
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
   return (
-    <div className="bg-black text-white h-screen flex flex-col justify-start items-center space-y-4 pt-10">
+    <div className="bg-black text-white min-h-screen flex flex-col items-center pt-10 pb-10">
       {/* صورة الشخصية الرئيسية */}
       <div className="w-[200px] h-[200px] rounded-full overflow-hidden circle-inner top_page">
         <img src={mainCharacter} alt="Main Character" className="w-full h-full object-cover" />
@@ -359,7 +359,6 @@ const FriendsPage: React.FC = () => {
     </div>
   );
 };
-
 
 const MinePage: React.FC = () => {
   return (
