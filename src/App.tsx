@@ -327,27 +327,32 @@ const FriendsPage: React.FC = () => {
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
   return (
-    <div className="bg-black text-white h-screen flex flex-col justify-start  items-center space-y-4">
-        <div className="w-[200px] h-[200x] rounded-full circle-inner top_page">
-                  <img src={mainCharacter} alt="Main Character" className="w-[200px] h-[200x" />
-                  </div>
-        <h3 className='title'>Top Score </h3>
-        
-      <div className="space-y-2 w-3/4">
+    <div className="bg-black text-white min-h-screen flex flex-col items-center pt-10">
+      <div className="w-11/12 space-y-4">
         {users.length > 0 ? (
           users.map((user, index) => (
-            <div key={user.user_id}className="bg-gray-800 p-4 rounded-md flex justify-around items-center shadow-md round">
-           <span className="text-lg font-semibold">{index + 1}</span>
-           <img src={dollarCoin}  className="w-[50px] h-[50x]" alt="" />
-              <span className="text-lg font-semibold">{user.name}</span>
-              <span className="text-lg">{user.reward_points.toLocaleString()} 💰</span>
+            <div
+              key={user.user_id}
+              className="bg-gray-800 p-4 rounded-xl flex items-center justify-between shadow-md"
+            >
+              <div className="flex items-center space-x-4">
+                <span className="text-lg font-bold text-yellow-500">{index + 1}</span>
+                <div className="bg-yellow-500 rounded-full p-2">
+                  <span className="text-white text-2xl">$</span>
+                </div>
+                <span className="text-lg font-semibold">{user.name}</span>
+              </div>
+              <span className="text-lg font-semibold text-yellow-500">
+                {user.reward_points.toLocaleString()} 💰
+              </span>
             </div>
-            
           ))
         ) : (
           <p>Loading...</p>
         )}
       </div>
+
+     
     </div>
   );
 };
