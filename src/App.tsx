@@ -294,7 +294,7 @@ const FriendsPage: React.FC = () => {
         }));
         
         // فرز المستخدمين حسب النقاط بترتيب تنازلي واختيار أعلى 5 فقط
-        const topUsers = usersData.sort((a: User, b: User) => b.reward_points - a.reward_points).slice(0, 5);
+        const topUsers = usersData.sort((a: User, b: User) => b.reward_points - a.reward_points).slice(0, 4);
         setUsers(topUsers);
       })
       .catch((error) => console.error("Error fetching users:", error));
