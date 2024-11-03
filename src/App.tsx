@@ -63,9 +63,9 @@ const HomePage: React.FC = () => {
               const chatId = chatIdData.chat_id;
               console.log("Chat ID:", chatId);
   
-              if (chatId) {
+              if (userId) {
                 console.log("Fetching user data...");
-                const userDataResponse = await fetch(`https://plask.farsa.sa:5002/get_user_data/${chatId}`);
+                const userDataResponse = await fetch(`https://plask.farsa.sa:5002/get_user_data/${userId}`);
                 if (userDataResponse.ok) {
                   const userData = await userDataResponse.json();
                   console.log("User Data:", userData);
