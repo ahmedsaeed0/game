@@ -279,6 +279,35 @@ interface User {
 }
 
 const FriendsPage: React.FC = () => {
+  
+
+
+//   return (
+//     <div className="bg-black text-white h-screen flex flex-col justify-start  items-center space-y-4">
+//       <div>
+        
+//         <div className="w-[200px] h-[200x] rounded-full circle-inner top_page">
+//                   <img src={mainCharacter} alt="Main Character" className="w-[200px] h-[200x" />
+//                   <h3></h3>
+//                 </div>
+//         <h3 className='title'>Top Score </h3>
+//       </div>
+//       <div className="space-y-2 w-3/4">
+      
+//             <div className="bg-gray-800 p-4 rounded-md flex justify-around items-center shadow-md round" >
+//             <img src={dollarCoin}  className="w-[50px] h-[50x]" alt="" />
+//               <span className="text-lg font-semibold">شاةثي</span>
+//               <span className="text-lg">32423434</span>
+//             </div>
+          
+        
+          
+        
+//       </div>
+//     </div>
+//   );
+// };
+
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
@@ -299,17 +328,21 @@ const FriendsPage: React.FC = () => {
   }, []);
   return (
     <div className="bg-black text-white h-screen flex flex-col justify-center items-center space-y-4">
+        <div className="w-[200px] h-[200x] rounded-full circle-inner top_page">
+                  <img src={mainCharacter} alt="Main Character" className="w-[200px] h-[200x" />
+                  <h3></h3>
+               </div>
+        <h3 className='title'>Top Score </h3>
       <div className="space-y-2 w-3/4">
         {users.length > 0 ? (
           users.map((user, index) => (
-            <div
-              key={user.user_id}
-              className="bg-gray-800 p-4 rounded-md flex justify-between items-center shadow-md"
-            >
+            <div key={user.user_id}className="bg-gray-800 p-4 rounded-md flex justify-around items-center shadow-md round">
            <span className="text-lg font-semibold">{index + 1}</span>
+           <img src={dollarCoin}  className="w-[50px] h-[50x]" alt="" />
               <span className="text-lg font-semibold">{user.name}</span>
               <span className="text-lg">{user.reward_points.toLocaleString()} 💰</span>
             </div>
+            
           ))
         ) : (
           <p>Loading...</p>
