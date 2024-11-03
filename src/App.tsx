@@ -300,7 +300,7 @@ const FriendsPage: React.FC = () => {
             >
               <span className="text-lg font-semibold">{index + 1}</span>
               <span className="text-lg font-semibold">{user.first_name}</span>
-              <span className="text-lg">{user.reward_points.toLocaleString()} 💰</span>
+              <span className="text-lg">{user.reward_points} 💰</span>
             </div>
           ))
         ) : (
