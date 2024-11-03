@@ -283,8 +283,15 @@ const FriendsPage: React.FC = () => {
     fetch("https://plask.farsa.sa:5002/get_users")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched users:", data); // للتحقق من البيانات
-        setUsers(data);
+        // تحويل المصفوفات إلى كائنات
+        const usersData = data.map((user: any) => ({
+          user_id: user[0],
+          name: user[1],
+          username: user[2],
+          points: user[3],
+          reward_points: user[4],
+        }));
+        setUsers(usersData);
       })
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
