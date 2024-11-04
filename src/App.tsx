@@ -334,14 +334,7 @@ const FriendsPage: React.FC = () => {
   );
 };
 
-const MinePage: React.FC = () => {
-  return (
-    <div className="bg-black text-white h-screen flex justify-center items-center">
-      <h1>Mine Page</h1>
-      <p>This is the mining section where you can mine coins.</p>
-    </div>
-  );
-};
+
 
 const ExchangePage: React.FC = () => {
   return (
@@ -368,7 +361,6 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/friends" element={<FriendsPage />} />
-          <Route path="/mine" element={<MinePage />} />
           <Route path="/exchange" element={<ExchangePage />} />
           <Route path="/earn" element={<EarnPage />} />
         </Routes>
