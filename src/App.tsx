@@ -347,7 +347,7 @@ const ExchangePage: React.FC = () => {
 const EarnPage: React.FC = () => {
   return (
     <div className="bg-black text-white h-screen flex justify-center items-center">
-      <h1>Earn Page</h1>
+      <h1>Earnnn Page</h1>
       <p>This is the section where you can earn coins.</p>
     </div>
   );
@@ -381,7 +381,7 @@ const App: React.FC = () => {
           <div className="text-center text-[#85827d] w-1/5">
             <Link to="/earn">
               <Coins className="w-8 h-8 mx-auto" />
-              <p className="mt-1">Earn</p>
+              <p className="mt-1">Earnn</p>
             </Link>
           </div>
         </div>
