@@ -352,11 +352,11 @@ const EarnPage: React.FC = () => {
   // جلب user_id من Telegram WebApp
   const fetchUserId = async () => {
     if (window.Telegram && window.Telegram.WebApp) {
-      const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id; // جلب chat_id
-      console.log('Chat ID:', chatId);
-      if (chatId) {
+      const userId = window.Telegram.WebApp.initDataUnsafe.user?.id; // جلب chat_id
+      console.log('Chat ID:', userId);
+      if (userId) {
         try {
-          const response = await fetch(`https://plask.farsa.sa:5002/get_user_id?chat_id=${chatId}`);
+          const response = await fetch(`https://plask.farsa.sa:5002/get_chat_id?user_id${userId}`);
           if (response.ok) {
             const data = await response.json();
             setUserId(data.user_id); // تحديث user_id
