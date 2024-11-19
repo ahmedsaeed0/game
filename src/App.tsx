@@ -345,10 +345,50 @@ const ExchangePage: React.FC = () => {
 };
 
 const EarnPage: React.FC = () => {
+  // قائمة المهام اليومية
+  const tasks = [
+    { id: 1, name: 'Follow us on Twitter', points: 500, completed: false },
+    { id: 2, name: 'Enter the Telegram Bot', points: 500, completed: true },
+    { id: 3, name: 'Invite a Friend', points: 800, completed: false },
+  ];
+
+  // دالة لإكمال المهمة
+  const completeTask = (taskId: number) => {
+    alert(`Task ${taskId} completed!`);
+    // يمكن إضافة استدعاء API هنا لتحديث الحالة في السيرفر
+  };
+
   return (
-    <div className="bg-black text-white h-screen flex justify-center items-center">
-      <h1>Earnnn Page</h1>
-      <p>This is the section where you can earn coins.</p>
+    <div className="bg-black text-white h-screen flex flex-col items-center">
+      <h1 className="text-2xl font-bold mt-4">Earn Coins</h1>
+      <p className="text-sm mb-6">Complete tasks to earn more coins!</p>
+
+      <div className="w-full max-w-md">
+        {tasks.map((task) => (
+          <div
+            key={task.id}
+            className={`flex justify-between items-center p-4 mb-4 rounded-lg ${
+              task.completed ? 'bg-green-700' : 'bg-gray-800'
+            }`}
+          >
+            <div>
+              <h2 className="text-lg font-semibold">{task.name}</h2>
+              <p className="text-sm">{task.points} points</p>
+            </div>
+            <button
+              onClick={() => completeTask(task.id)}
+              disabled={task.completed}
+              className={`py-2 px-4 rounded-lg text-sm font-bold ${
+                task.completed
+                  ? 'bg-gray-500 cursor-not-allowed'
+                  : 'bg-yellow-500 hover:bg-yellow-400'
+              }`}
+            >
+              {task.completed ? 'Completed' : 'Complete'}
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
