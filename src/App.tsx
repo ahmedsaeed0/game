@@ -356,7 +356,7 @@ const EarnPage: React.FC = () => {
       console.log('Chat ID:', userId);
       if (userId) {
         try {
-          const response = await fetch(`https://plask.farsa.sa:5002/get_chat_id?user_id${userId}`);
+          const response = await fetch(`https://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`);
           if (response.ok) {
             const data = await response.json();
             setUserId(data.user_id); // تحديث user_id
