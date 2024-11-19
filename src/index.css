@@ -5,3 +5,21 @@
 body {
     font-family: sans-serif;
 }
+
+.new{
+
+}
+.top_page{
+    margin-top:70px ;
+
+}
+
+.title{
+    font-size: 30px;
+    text-align: center;
+    padding: 10px;
+    margin-top: 5px;
+}
+.round{
+    border-radius: 30px;
+}

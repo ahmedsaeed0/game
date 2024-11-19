@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
-// import Hamster from './icons/Hamster';
 import { binanceLogo, dollarCoin, mainCharacter } from './images';
 import Info from './icons/Info';
-// import Settings from './icons/Settings';
-import Mine from './icons/Mine';
 import Friends from './icons/Friends';
 import Coins from './icons/Coins';
+
 interface TelegramWindow extends Window {
   Telegram?: {
     WebApp: {
@@ -48,18 +46,90 @@ const HomePage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const sendPointsToBot = (newPoints: number) => {
-    // هنا نقوم بإرسال البيانات إلى البوت
+  // جلب بيانات المستخدم من السيرفر (Flask)
+  useEffect(() => {
+    const fetchData = async () => {
+      if (window.Telegram && window.Telegram.WebApp) {
+        const userId = window.Telegram.WebApp.initDataUnsafe.user?.id;  
+        console.log("User ID:", userId);
+  
+        if (userId) {
+          try {
+            console.log("Fetching chat ID...");
+            const chatIdResponse = await fetch(`https://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`);
+            if (chatIdResponse.ok) {
+              const chatIdData = await chatIdResponse.json();
+              const chatId = chatIdData.chat_id;
+              console.log("Chat ID:", chatId);
+  
+              if (userId) {
+                console.log("Fetching user data...");
+                const userDataResponse = await fetch(`https://plask.farsa.sa:5002/get_user_data/${userId}`);
+                if (userDataResponse.ok) {
+                  const userData = await userDataResponse.json();
+                  console.log("User Data:", userData);
+                  setPoints(userData.reward_points);  // تحديث النقاط بناءً على البيانات المستلمة
+                } else {
+                  console.error('Failed to fetch user data');
+                }
+              } else {
+                console.error('Chat ID not found for the specified user ID');
+              }
+            } else {
+              console.error('Failed to fetch chat ID');
+            }
+          } catch (error) {
+            console.error('Error fetching chat ID:', error);
+          }
+        } else {
+          console.error('No user ID available.');
+        }
+      } else {
+        console.error('Telegram WebApp is not available.');
+      }
+    };
+  
+    fetchData();
+  }, []);
+  const sendPointsToBot = async (newPoints: number) => {
+    console.log(newPoints);
+    // تحقق من وجود Telegram WebApp API
     if (window.Telegram && window.Telegram.WebApp) {
-      const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id; // نحصل على chat_id الخاص بالمستخدم
-      window.Telegram.WebApp.sendData(
-        JSON.stringify({
-          points: newPoints,
-          chat_id: chatId
-        })
-      );
+      const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;
+      console.log(chatId);
+  
+      if (chatId) {
+        try {
+          // إرسال النقاط و chat_id إلى الخادم الخلفي باستخدام fetch
+          const response = await fetch('https://plask.farsa.sa:5002/update_points', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chat_id: chatId,
+              points: newPoints,
+            }),
+          });
+  
+          const data = await response.json();
+  
+          if (response.ok) {
+            console.log('Points updated successfully:', data);
+          } else {
+            console.error('Error updating points:', data.message);
+          }
+        } catch (error) {
+          console.error('Error updating points:', error);
+        }
+      } else {
+        console.error('chat_id not found');
+      }
+    } else {
+      console.error('Telegram WebApp is not available');
     }
   };
+  
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
@@ -75,7 +145,6 @@ const HomePage: React.FC = () => {
     setPoints(newPoints);
     setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
 
-    // إرسال النقاط والـ chat_id للبوت
     sendPointsToBot(newPoints);
   };
 
@@ -123,9 +192,7 @@ const HomePage: React.FC = () => {
       <div className="w-full bg-black text-white h-screen font-bold flex flex-col max-w-xl">
         <div className="px-4 z-10">
           <div className="flex items-center space-x-2 pt-4">
-            <div className="p-1 rounded-lg bg-[#1d2025]">
-              {/* <Hamster size={24} className="text-[#d4d4d4]" /> */}
-            </div>
+            <div className="p-1 rounded-lg bg-[#1d2025]"></div>
             <div>
               <p className="text-sm">ajaw </p>
             </div>
@@ -161,8 +228,7 @@ const HomePage: React.FC = () => {
 
         <div className="flex-grow mt-4 bg-[#f3ba2f] rounded-t-[48px] relative top-glow z-0">
           <div className="absolute top-[2px] left-0 right-0 bottom-0 bg-[#1d2025] rounded-t-[46px]">
-            <div className="px-4 mt-6 flex justify-between gap-2">
-            </div>
+            <div className="px-4 mt-6 flex justify-between gap-2"></div>
 
             <div className="px-4 mt-4 flex justify-center">
               <div className="px-4 py-2 flex items-center space-x-2">
@@ -203,23 +269,71 @@ const HomePage: React.FC = () => {
   );
 };
 
+interface User {
+  user_id: number;
+  name: string;         // تأكد من إضافة هذا الحقل
+  username: string;
+  points: number;
+  reward_points: number;
+}
+
 const FriendsPage: React.FC = () => {
+
+
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    fetch("https://plask.farsa.sa:5002/get_users")
+      .then((response) => response.json())
+      .then((data) => {
+        const usersData = data.map((user: any) => ({
+          user_id: user[0] || 0,
+          name: user[1] || "No Name",
+          reward_points: user[4] || 0,
+        }));
+        
+        // فرز المستخدمين حسب النقاط بترتيب تنازلي واختيار أعلى 5 فقط
+        const topUsers = usersData.sort((a: User, b: User) => b.reward_points - a.reward_points).slice(0, 4);
+        setUsers(topUsers);
+      })
+      .catch((error) => console.error("Error fetching users:", error));
+  }, []);
+
   return (
-    <div className="bg-black text-white h-screen flex justify-center items-center">
-      <h1>Friends Page</h1>
-      <p>This is the Friends section where you can see your friends.</p>
+    <div className="bg-black text-white min-h-screen flex flex-col items-center pt-10 pb-10">
+      {/* صورة الشخصية الرئيسية */}
+      <div className="w-[200px] h-[200px] rounded-full overflow-hidden circle-inner top_page">
+        <img src={mainCharacter} alt="Main Character" className="w-full h-full object-cover" />
+      </div>
+      
+      {/* العنوان */}
+      <h3 className="text-2xl font-bold text-yellow-500 mt-4">Top Score</h3>
+
+      {/* قائمة المستخدمين */}
+      <div className="space-y-2 w-3/4 mt-4">
+        {users.length > 0 ? (
+          users.map((user, index) => (
+            <div
+              key={user.user_id}
+              className="bg-gray-800 p-4 rounded-md flex justify-around items-center shadow-md"
+            >
+              <span className="text-lg font-semibold text-yellow-500">{index + 1}</span>
+              <img src={dollarCoin} className="w-[50px] h-[50px]" alt="Coin" />
+              <span className="text-lg font-semibold">{user.name}</span>
+              <span className="text-lg font-semibold text-yellow-500">
+                {user.reward_points.toLocaleString()} 💰
+              </span>
+            </div>
+          ))
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
     </div>
   );
 };
 
-const MinePage: React.FC = () => {
-  return (
-    <div className="bg-black text-white h-screen flex justify-center items-center">
-      <h1>Mine Page</h1>
-      <p>This is the mining section where you can mine coins.</p>
-    </div>
-  );
-};
+
 
 const ExchangePage: React.FC = () => {
   return (
@@ -246,7 +360,6 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/friends" element={<FriendsPage />} />
-          <Route path="/mine" element={<MinePage />} />
           <Route path="/exchange" element={<ExchangePage />} />
           <Route path="/earn" element={<EarnPage />} />
         </Routes>
@@ -258,12 +371,7 @@ const App: React.FC = () => {
               <p className="mt-1">Exchange</p>
             </Link>
           </div>
-          <div className="text-center text-[#85827d] w-1/5">
-            <Link to="/mine">
-              <Mine className="w-8 h-8 mx-auto" />
-              <p className="mt-1">Mine</p>
-            </Link>
-          </div>
+          
           <div className="text-center text-[#85827d] w-1/5">
             <Link to="/friends">
               <Friends className="w-8 h-8 mx-auto" />
@@ -283,3 +391,5 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+
