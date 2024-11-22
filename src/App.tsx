@@ -345,13 +345,78 @@ const ExchangePage: React.FC = () => {
 };
 
 const EarnPage: React.FC = () => {
+  const tasks = [
+    {
+      category: "Hamster Youtube",
+      items: [
+        { title: "Watch the new YouTube video", reward: "+100,000", completed: true, icon: "📹" },
+        { title: "Hamster CEOs shout out to MrBeast", reward: "+100,000", completed: true, icon: "📹" },
+      ],
+    },
+    {
+      category: "Daily tasks",
+      items: [
+        { title: "Daily reward", reward: "+6,649,000", completed: true, icon: "🎁" },
+      ],
+    },
+    {
+      category: "Tasks list",
+      items: [
+        { title: "Join our TG channel", reward: "+5,000", completed: false, icon: "🔗" },
+        { title: "Follow our X account", reward: "+5,000", completed: false, icon: "❌" },
+      ],
+    },
+  ];
+
   return (
-    <div className="bg-black text-white h-screen flex justify-center items-center">
-      <h1>Earnnn Page</h1>
-      <p>This is the section where you can earn coins.</p>
+    <div className="bg-black text-white h-screen flex flex-col items-center px-4 pt-10 pb-10">
+      {/* أيقونة الدولار والعنوان */}
+      <div className="text-center mb-6">
+        <div className="w-20 h-20 mx-auto rounded-full bg-yellow-500 flex items-center justify-center shadow-lg">
+          <span className="text-4xl">💰</span>
+        </div>
+        <h1 className="text-2xl font-bold mt-4">Earn more coins</h1>
+      </div>
+
+      {/* المهام */}
+      {tasks.map((taskGroup, index) => (
+        <div key={index} className="w-full mb-6">
+          {/* العنوان الرئيسي للفئة */}
+          <h3 className="text-lg font-bold text-yellow-500 mb-2">{taskGroup.category}</h3>
+          <div className="space-y-3">
+            {taskGroup.items.map((task, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between bg-gray-800 p-4 rounded-md shadow-md"
+              >
+                {/* التفاصيل */}
+                <div className="flex items-center space-x-4">
+                  <span className="text-2xl">{task.icon}</span>
+                  <div>
+                    <p className="text-sm font-bold">{task.title}</p>
+                    <p className="text-xs text-gray-400">{task.reward}</p>
+                  </div>
+                </div>
+
+                {/* الحالة */}
+                {task.completed ? (
+                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
+                    ✓
+                  </div>
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center">
+                    ✗
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
+
 
 const App: React.FC = () => {
   return (
