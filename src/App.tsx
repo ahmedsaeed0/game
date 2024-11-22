@@ -346,13 +346,7 @@ const ExchangePage: React.FC = () => {
 
 const EarnPage: React.FC = () => {
   const tasks = [
-    {
-      category: "Hamster Youtube",
-      items: [
-        { title: "Watch the new YouTube video", reward: "+100,000", completed: true, icon: "📹" },
-        { title: "Hamster CEOs shout out to MrBeast", reward: "+100,000", completed: true, icon: "📹" },
-      ],
-    },
+    
     {
       category: "Daily tasks",
       items: [
