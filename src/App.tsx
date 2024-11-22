@@ -345,104 +345,104 @@ const ExchangePage: React.FC = () => {
 };
 
 
-  const EarnPage: React.FC = () => {
-    const [tasks, setTasks] = useState<any[]>([]);
-    const [userId, setUserId] = useState<number | null>(null);
-  
-    // جلب user_id من Telegram WebApp
-    useEffect(() => {
-      const telegramData = window.Telegram?.WebApp?.initDataUnsafe;
-      const fetchedUserId = telegramData?.user?.id;
-      if (fetchedUserId) {
-        setUserId(fetchedUserId);
-      } else {
-        console.error("User ID not found.");
-      }
-    }, []);
-  
-    // جلب المهام اليومية من الباك-إند
-    useEffect(() => {
-      const fetchDailyTasks = async () => {
-        if (!userId) return;
-  
-        try {
-          const response = await fetch(`https://plask.farsa.sa:5002/daily-tasks?user_id=${userId}`);
-          const data = await response.json();
-  
-          // إضافة المهمة اليومية (500 نقطة) افتراضياً
-          const dailyReward = {
-            task_name: "Daily reward",
-            task_points: 500,
-            completed_at: null,
-            icon: "🎁",
-          };
-  
-          const updatedTasks = [
-            dailyReward,
-            ...data.tasks.map((task: any) => ({
-              ...task,
-              icon: task.task_name === "Follow Twitter" ? "🔗" : task.task_name === "Visit Telegram Bot" ? "❌" : "",
-            })),
-          ];
-  
-          setTasks(updatedTasks);
-        } catch (error) {
-          console.error("Error fetching tasks:", error);
-        }
-      };
-  
-      fetchDailyTasks();
-    }, [userId]);
-  
-    // إكمال مهمة
-    const completeTask = async (taskName: string) => {
+const EarnPage: React.FC = () => {
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [userId, setUserId] = useState<number | null>(null);
+
+  // جلب user_id من Telegram WebApp
+  useEffect(() => {
+    const telegramData = window.Telegram?.WebApp?.initDataUnsafe;
+    const fetchedUserId = telegramData?.user?.id;
+    if (fetchedUserId) {
+      setUserId(fetchedUserId);
+    } else {
+      console.error("User ID not found.");
+    }
+  }, []);
+
+  // جلب المهام اليومية من الباك-إند
+  useEffect(() => {
+    const fetchDailyTasks = async () => {
       if (!userId) return;
-  
+
       try {
-        const response = await fetch("https://plask.farsa.sa:5002/complete-task", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: userId, task_name: taskName }),
-        });
-  
+        const response = await fetch(`https://plask.farsa.sa:5002/daily-tasks?user_id=${userId}`);
         const data = await response.json();
-        if (response.ok) {
-          console.log(data.message);
-          // تحديث المهام بعد إكمال المهمة
-          setTasks((prevTasks) =>
-            prevTasks.map((task) =>
-              task.task_name === taskName ? { ...task, completed_at: new Date().toISOString() } : task
-            )
+
+        // قائمة المهام
+        const defaultTasks = [
+          { task_name: "Daily reward", task_points: 500, completed_at: null, icon: "🎁" },
+          { task_name: "Follow Twitter", task_points: 5000, completed_at: null, icon: "🐦" },
+          { task_name: "Join Telegram Channel", task_points: 5000, completed_at: null, icon: "📣" },
+        ];
+
+        // دمج المهام القادمة من الباك-إند مع المهام الافتراضية
+        const updatedTasks = defaultTasks.map((defaultTask) => {
+          const existingTask = data.tasks.find(
+            (task: any) => task.task_name === defaultTask.task_name
           );
-        } else {
-          console.error("Error completing task:", data.error);
-        }
+          return existingTask || defaultTask;
+        });
+
+        setTasks(updatedTasks);
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error fetching tasks:", error);
       }
     };
-  
-    return (
-      <div className="bg-black text-white h-screen flex flex-col items-center px-4 pt-10 pb-10">
-        <div className="text-center mb-6">
-          <div className="w-20 h-20 mx-auto rounded-full bg-yellow-500 flex items-center justify-center shadow-lg">
-            <span className="text-4xl">💰</span>
-          </div>
-          <h1 className="text-2xl font-bold mt-4">Earn more coins</h1>
+
+    fetchDailyTasks();
+  }, [userId]);
+
+  // إكمال مهمة
+  const completeTask = async (taskName: string) => {
+    if (!userId) return;
+
+    try {
+      const response = await fetch("https://plask.farsa.sa:5002/complete-task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, task_name: taskName }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log(data.message);
+        // تحديث المهام بعد إكمال المهمة
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.task_name === taskName ? { ...task, completed_at: new Date().toISOString() } : task
+          )
+        );
+      } else {
+        console.error("Error completing task:", data.error);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  return (
+    <div className="bg-black text-white h-screen flex flex-col items-center px-4 pt-10 pb-10">
+      <div className="text-center mb-6">
+        <div className="w-20 h-20 mx-auto rounded-full bg-yellow-500 flex items-center justify-center shadow-lg">
+          <span className="text-4xl">💰</span>
         </div>
-  
-        {tasks.length > 0 ? (
-          tasks.map((task, idx) => (
-            <div
-              key={idx}
-              className="flex items-center justify-between bg-gray-800 p-4 rounded-md shadow-md mb-4 w-full max-w-md"
-            >
-              <div>
-                <h3 className="text-lg font-bold">{task.task_name}</h3>
-                <p className="text-sm text-gray-400">Points: {task.task_points}</p>
-                <p className="text-sm text-gray-400">
-                  Status: {task.completed_at ? "Completed" : "Pending"}
-                </p>
+        <h1 className="text-2xl font-bold mt-4">Earn more coins</h1>
+      </div>
+
+      <div className="w-full">
+        {tasks.map((task, idx) => (
+          <div key={idx} className="w-full mb-4 px-4">
+            <div className="flex items-center justify-between bg-gray-800 p-4 rounded-md shadow-md">
+              <div className="flex items-center space-x-4">
+                <span className="text-2xl">{task.icon}</span>
+                <div>
+                  <h3 className="text-lg font-bold">{task.task_name}</h3>
+                  <p className="text-sm text-gray-400">Points: {task.task_points}</p>
+                  <p className="text-sm text-gray-400">
+                    Status: {task.completed_at ? "Completed" : "Pending"}
+                  </p>
+                </div>
               </div>
               {!task.completed_at && (
                 <button
@@ -453,13 +453,13 @@ const ExchangePage: React.FC = () => {
                 </button>
               )}
             </div>
-          ))
-        ) : (
-          <p>Loading tasks...</p>
-        )}
+          </div>
+        ))}
       </div>
-    );
-  };
+    </div>
+  );
+};
+
   
 
 const App: React.FC = () => {
