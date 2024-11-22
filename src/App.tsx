@@ -345,72 +345,122 @@ const ExchangePage: React.FC = () => {
 };
 
 const EarnPage: React.FC = () => {
-  const tasks = [
-    
-    {
-      category: "Daily tasks",
-      items: [
-        { title: "Daily reward", reward: "+6,649,000", completed: true, icon: "🎁" },
-      ],
-    },
-    {
-      category: "Tasks list",
-      items: [
-        { title: "Join our TG channel", reward: "+5,000", completed: false, icon: "🔗" },
-        { title: "Follow our X account", reward: "+5,000", completed: false, icon: "❌" },
-      ],
-    },
-  ];
-
-  return (
-    <div className="bg-black text-white h-screen flex flex-col items-center px-4 pt-10 pb-10">
-      {/* أيقونة الدولار والعنوان */}
-      <div className="text-center mb-6">
-        <div className="w-20 h-20 mx-auto rounded-full bg-yellow-500 flex items-center justify-center shadow-lg">
-          <span className="text-4xl">💰</span>
-        </div>
-        <h1 className="text-2xl font-bold mt-4">Earn more coins</h1>
-      </div>
-
-      {/* المهام */}
-      {tasks.map((taskGroup, index) => (
-        <div key={index} className="w-full mb-6">
-          {/* العنوان الرئيسي للفئة */}
-          <h3 className="text-lg font-bold text-yellow-500 mb-2">{taskGroup.category}</h3>
-          <div className="space-y-3">
-            {taskGroup.items.map((task, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between bg-gray-800 p-4 rounded-md shadow-md"
-              >
-                {/* التفاصيل */}
-                <div className="flex items-center space-x-4">
-                  <span className="text-2xl">{task.icon}</span>
-                  <div>
-                    <p className="text-sm font-bold">{task.title}</p>
-                    <p className="text-xs text-gray-400">{task.reward}</p>
-                  </div>
-                </div>
-
-                {/* الحالة */}
-                {task.completed ? (
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                    ✓
-                  </div>
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center">
-                    ✗
-                  </div>
-                )}
-              </div>
-            ))}
+  const EarnPage: React.FC = () => {
+    const [tasks, setTasks] = useState<any[]>([]);
+    const [userId, setUserId] = useState<number | null>(null);
+  
+    // جلب user_id من Telegram WebApp
+    useEffect(() => {
+      const telegramData = window.Telegram?.WebApp?.initDataUnsafe;
+      const fetchedUserId = telegramData?.user?.id;
+      if (fetchedUserId) {
+        setUserId(fetchedUserId);
+      } else {
+        console.error("User ID not found.");
+      }
+    }, []);
+  
+    // جلب المهام اليومية من الباك-إند
+    useEffect(() => {
+      const fetchDailyTasks = async () => {
+        if (!userId) return;
+  
+        try {
+          const response = await fetch(`https://plask.farsa.sa:5002/daily-tasks?user_id=${userId}`);
+          const data = await response.json();
+  
+          // إضافة المهمة اليومية (500 نقطة) افتراضياً
+          const dailyReward = {
+            task_name: "Daily reward",
+            task_points: 500,
+            completed_at: null,
+            icon: "🎁",
+          };
+  
+          const updatedTasks = [
+            dailyReward,
+            ...data.tasks.map((task: any) => ({
+              ...task,
+              icon: task.task_name === "Follow Twitter" ? "🔗" : task.task_name === "Visit Telegram Bot" ? "❌" : "",
+            })),
+          ];
+  
+          setTasks(updatedTasks);
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+        }
+      };
+  
+      fetchDailyTasks();
+    }, [userId]);
+  
+    // إكمال مهمة
+    const completeTask = async (taskName: string) => {
+      if (!userId) return;
+  
+      try {
+        const response = await fetch("https://plask.farsa.sa:5002/complete-task", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId, task_name: taskName }),
+        });
+  
+        const data = await response.json();
+        if (response.ok) {
+          console.log(data.message);
+          // تحديث المهام بعد إكمال المهمة
+          setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+              task.task_name === taskName ? { ...task, completed_at: new Date().toISOString() } : task
+            )
+          );
+        } else {
+          console.error("Error completing task:", data.error);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+  
+    return (
+      <div className="bg-black text-white h-screen flex flex-col items-center px-4 pt-10 pb-10">
+        <div className="text-center mb-6">
+          <div className="w-20 h-20 mx-auto rounded-full bg-yellow-500 flex items-center justify-center shadow-lg">
+            <span className="text-4xl">💰</span>
           </div>
+          <h1 className="text-2xl font-bold mt-4">Earn more coins</h1>
         </div>
-      ))}
-    </div>
-  );
-};
-
+  
+        {tasks.length > 0 ? (
+          tasks.map((task, idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-between bg-gray-800 p-4 rounded-md shadow-md mb-4 w-full max-w-md"
+            >
+              <div>
+                <h3 className="text-lg font-bold">{task.task_name}</h3>
+                <p className="text-sm text-gray-400">Points: {task.task_points}</p>
+                <p className="text-sm text-gray-400">
+                  Status: {task.completed_at ? "Completed" : "Pending"}
+                </p>
+              </div>
+              {!task.completed_at && (
+                <button
+                  onClick={() => completeTask(task.task_name)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                >
+                  Complete
+                </button>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>Loading tasks...</p>
+        )}
+      </div>
+    );
+  };
+  
 
 const App: React.FC = () => {
   return (
@@ -452,3 +502,14 @@ const App: React.FC = () => {
 export default App;
 
 
+
+
+
+
+
+
+
+
+
+
+// org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=2G -XX:+HeapDumpOnOutOfMemoryError
