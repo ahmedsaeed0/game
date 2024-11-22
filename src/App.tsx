@@ -344,7 +344,7 @@ const ExchangePage: React.FC = () => {
   );
 };
 
-const EarnPage: React.FC = () => {
+
   const EarnPage: React.FC = () => {
     const [tasks, setTasks] = useState<any[]>([]);
     const [userId, setUserId] = useState<number | null>(null);
