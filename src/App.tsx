@@ -335,6 +335,15 @@ const FriendsPage: React.FC = () => {
 
 
 
+const ExchangePage: React.FC = () => {
+  return (
+    <div className="bg-black text-white h-screen flex justify-center items-center">
+      <h1>Exchange Page</h1>
+      <p>This is the Exchange section where you can trade coins.</p>
+    </div>
+  );
+};
+
 
 const EarnPage: React.FC = () => {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -360,7 +369,7 @@ const EarnPage: React.FC = () => {
         const response = await fetch(`https://plask.farsa.sa:5002/daily-tasks?user_id=${userId}`);
         const data = await response.json();
 
-        // قائمة المهام الافتراضية
+        // قائمة المهام
         const defaultTasks = [
           { task_name: "Daily reward", task_points: 500, completed_at: null, icon: "🎁" },
           { task_name: "Follow Twitter", task_points: 5000, completed_at: null, icon: "🐦" },
@@ -450,6 +459,7 @@ const EarnPage: React.FC = () => {
     </div>
   );
 };
+
   
 
 const App: React.FC = () => {
@@ -459,6 +469,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/friends" element={<FriendsPage />} />
+          <Route path="/exchange" element={<ExchangePage />} />
           <Route path="/earn" element={<EarnPage />} />
         </Routes>
 
