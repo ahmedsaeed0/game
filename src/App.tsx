@@ -366,21 +366,31 @@ const EarnPage: React.FC = () => {
       if (!userId) return;
   
       try {
-        // جلب المهام من الـ API
-        const response = await fetch(`https://plask.farsa.sa:5002/tasks`);
-        const data = await response.json();
+        // جلب قائمة المهام من الـ API
+        const tasksResponse = await fetch(`https://plask.farsa.sa:5002/tasks`);
+        const tasksData = await tasksResponse.json();
+  
+        // جلب حالة المهام للمستخدم من الـ API
+        const userTasksResponse = await fetch(`https://plask.farsa.sa:5002/user-tasks?user_id=${userId}`);
+        const userTasksData = await userTasksResponse.json();
   
         // تحويل البيانات التي تعيدها الـ API إلى صيغة يمكن استخدامها
-        const updatedTasks = data.tasks.map((task: any) => ({
-          task_name: task.name_task, // استخدام اسم المهمة من الـ API
-          task_points: task.task_point, // استخدام النقاط من الـ API
-          completed_at: null, // افتراض أن المهمة غير مكتملة
-          icon: task.name_task === "Daily reward" ? "🎁" : 
-                task.name_task === "Follow Twitter" ? "🐦" : 
-                task.name_task === "Join Telegram Channel" ? "📣" : "✔️", // إضافة الأيقونة حسب اسم المهمة
-        }));
+        const updatedTasks = tasksData.tasks.map((task: any) => {
+          const userTask = userTasksData.tasks.find(
+            (userTask: any) => userTask.name_task === task.name_task
+          );
   
-        // تحديث الحالة بالمهام الجديدة
+          return {
+            task_name: task.name_task, // اسم المهمة
+            task_points: task.task_point, // النقاط
+            completed_at: userTask?.completed_at || null, // حالة الإكمال
+            icon: task.name_task === "Daily reward" ? "🎁" :
+                  task.name_task === "Follow Twitter" ? "🐦" :
+                  task.name_task === "Join Telegram Channel" ? "📣" : "✔️",
+          };
+        });
+  
+        // تحديث الحالة بالمهام
         setTasks(updatedTasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -389,6 +399,8 @@ const EarnPage: React.FC = () => {
   
     fetchDailyTasks();
   }, [userId]);
+  
+  
 
   // إكمال مهمة
   const completeTask = async (taskName: string) => {
