@@ -369,7 +369,7 @@ const EarnPage: React.FC = () => {
         const response = await fetch(`https://plask.farsa.sa:5002/daily-tasks?user_id=${userId}`);
         const data = await response.json();
 
-        // قائمة المهام
+        // قائمة المهام الافتراضية
         const defaultTasks = [
           { task_name: "Daily reward", task_points: 500, completed_at: null, icon: "🎁" },
           { task_name: "Follow Twitter", task_points: 5000, completed_at: null, icon: "🐦" },
@@ -459,7 +459,6 @@ const EarnPage: React.FC = () => {
     </div>
   );
 };
-
   
 
 const App: React.FC = () => {
