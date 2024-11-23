@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
         if (userId) {
           try {
             console.log("Fetching chat ID...");
-            const chatIdResponse = await fetch(`https://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`);
+            const chatIdResponse = await fetch(`https://plask.farsa.sa:5002/get_chat_id?user_id=${ }`);
             if (chatIdResponse.ok) {
               const chatIdData = await chatIdResponse.json();
               const chatId = chatIdData.chat_id;
@@ -369,7 +369,7 @@ const EarnPage: React.FC = () => {
         // جلب قائمة المهام من الـ API
         const tasksResponse = await fetch(`https://plask.farsa.sa:5002/tasks`);
         const tasksData = await tasksResponse.json();
-  
+        console.log(userId);
         // جلب حالة المهام للمستخدم من الـ API
         const userTasksResponse = await fetch(`https://plask.farsa.sa:5002/user-tasks?user_id=${userId}`);
         const userTasksData = await userTasksResponse.json();
@@ -404,22 +404,27 @@ const EarnPage: React.FC = () => {
 
   // إكمال مهمة
   const completeTask = async (taskName: string) => {
-    if (!userId) return;
-
+    if (!userId) return; // التحقق من وجود userId
+  
     try {
+      // طلب POST لإكمال المهمة
       const response = await fetch("https://plask.farsa.sa:5002/complete-task", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, task_name: taskName }),
+        body: JSON.stringify({ user_id: userId, task_name: taskName, }), // إرسال user_id واسم المهمة
       });
-
+  
       const data = await response.json();
+  
       if (response.ok) {
         console.log(data.message);
-        // تحديث المهام بعد إكمال المهمة
+  
+        // تحديث المهام بعد إكمال المهمة مع وقت الإتمام من قاعدة البيانات
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
-            task.task_name === taskName ? { ...task, completed_at: new Date().toISOString() } : task
+            task.task_name === taskName
+              ? { ...task, completed_at: data.completed_at } // استخدام completed_at من الاستجابة
+              : task
           )
         );
       } else {
@@ -429,6 +434,7 @@ const EarnPage: React.FC = () => {
       console.error("Error:", error);
     }
   };
+  
 
   return (
     <div className="bg-black text-white h-screen flex flex-col items-center px-4 pt-10 pb-10">
