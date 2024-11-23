@@ -335,6 +335,7 @@ const FriendsPage: React.FC = () => {
 
 
 
+
 const EarnPage: React.FC = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
@@ -449,6 +450,7 @@ const EarnPage: React.FC = () => {
     </div>
   );
 };
+  
 
 const App: React.FC = () => {
   return (
