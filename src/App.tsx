@@ -335,16 +335,6 @@ const FriendsPage: React.FC = () => {
 
 
 
-const ExchangePage: React.FC = () => {
-  return (
-    <div className="bg-black text-white h-screen flex justify-center items-center">
-      <h1>Exchange Page</h1>
-      <p>This is the Exchange section where you can trade coins.</p>
-    </div>
-  );
-};
-
-
 const EarnPage: React.FC = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
@@ -459,7 +449,6 @@ const EarnPage: React.FC = () => {
     </div>
   );
 };
-  
 
 const App: React.FC = () => {
   return (
