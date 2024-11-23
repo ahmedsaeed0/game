@@ -364,32 +364,29 @@ const EarnPage: React.FC = () => {
   useEffect(() => {
     const fetchDailyTasks = async () => {
       if (!userId) return;
-
+  
       try {
-        const response = await fetch(`https://plask.farsa.sa:5002/daily-tasks?user_id=${userId}`);
+        // جلب المهام من الـ API
+        const response = await fetch(`https://plask.farsa.sa:5002/tasks`);
         const data = await response.json();
-
-        // قائمة المهام
-        const defaultTasks = [
-          { task_name: "Daily reward", task_points: 500, completed_at: null, icon: "🎁" },
-          { task_name: "Follow Twitter", task_points: 5000, completed_at: null, icon: "🐦" },
-          { task_name: "Join Telegram Channel", task_points: 5000, completed_at: null, icon: "📣" },
-        ];
-
-        // دمج المهام القادمة من الباك-إند مع المهام الافتراضية
-        const updatedTasks = defaultTasks.map((defaultTask) => {
-          const existingTask = data.tasks.find(
-            (task: any) => task.task_name === defaultTask.task_name
-          );
-          return existingTask || defaultTask;
-        });
-
+  
+        // تحويل البيانات التي تعيدها الـ API إلى صيغة يمكن استخدامها
+        const updatedTasks = data.tasks.map((task: any) => ({
+          task_name: task.name_task, // استخدام اسم المهمة من الـ API
+          task_points: task.task_point, // استخدام النقاط من الـ API
+          completed_at: null, // افتراض أن المهمة غير مكتملة
+          icon: task.name_task === "Daily reward" ? "🎁" : 
+                task.name_task === "Follow Twitter" ? "🐦" : 
+                task.name_task === "Join Telegram Channel" ? "📣" : "✔️", // إضافة الأيقونة حسب اسم المهمة
+        }));
+  
+        // تحديث الحالة بالمهام الجديدة
         setTasks(updatedTasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     };
-
+  
     fetchDailyTasks();
   }, [userId]);
 
