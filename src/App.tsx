@@ -459,7 +459,6 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/friends" element={<FriendsPage />} />
-          <Route path="/exchange" element={<ExchangePage />} />
           <Route path="/earn" element={<EarnPage />} />
         </Routes>
 
