@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import './App.css';
-import { binanceLogo, dollarCoin, mainCharacter } from './images';
-import Info from './icons/Info';
-import Friends from './icons/Friends';
-import Coins from './icons/Coins';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import "./App.css";
+import { binanceLogo, dollarCoin, mainCharacter } from "./images";
+import Info from "./icons/Info";
+import Friends from "./icons/Friends";
+import Coins from "./icons/Coins";
 
 interface TelegramWindow extends Window {
   Telegram?: {
@@ -23,16 +23,28 @@ declare const window: TelegramWindow;
 
 const HomePage: React.FC = () => {
   const levelNames = [
-    "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Epic", "Legendary", "Master", "GrandMaster", "Lord"
+    "Bronze",
+    "Silver",
+    "Gold",
+    "Platinum",
+    "Diamond",
+    "Epic",
+    "Legendary",
+    "Master",
+    "GrandMaster",
+    "Lord",
   ];
 
   const levelMinPoints = [
-    0, 5000, 25000, 100000, 1000000, 2000000, 10000000, 50000000, 100000000, 1000000000
+    0, 5000, 25000, 100000, 1000000, 2000000, 10000000, 50000000, 100000000,
+    1000000000,
   ];
 
   const [levelIndex, setLevelIndex] = useState(6);
   const [points, setPoints] = useState(0);
-  const [clicks, setClicks] = useState<{ id: number, x: number, y: number }[]>([]);
+  const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
+    []
+  );
   const pointsToAdd = 11;
   const profitPerHour = 126420;
 
@@ -50,45 +62,49 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (window.Telegram && window.Telegram.WebApp) {
-        const userId = window.Telegram.WebApp.initDataUnsafe.user?.id;  
+        const userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
         console.log("User ID:", userId);
-  
+
         if (userId) {
           try {
             console.log("Fetching chat ID...");
-            const chatIdResponse = await fetch(`https://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`);
+            const chatIdResponse = await fetch(
+              `https://plask.farsa.sa:5002/get_chat_id?user_id=${userId}`
+            );
             if (chatIdResponse.ok) {
               const chatIdData = await chatIdResponse.json();
               const chatId = chatIdData.chat_id;
               console.log("Chat ID:", chatId);
-  
+
               if (userId) {
                 console.log("Fetching user data...");
-                const userDataResponse = await fetch(`https://plask.farsa.sa:5002/get_user_data/${userId}`);
+                const userDataResponse = await fetch(
+                  `https://plask.farsa.sa:5002/get_user_data/${userId}`
+                );
                 if (userDataResponse.ok) {
                   const userData = await userDataResponse.json();
                   console.log("User Data:", userData);
-                  setPoints(userData.reward_points);  // تحديث النقاط بناءً على البيانات المستلمة
+                  setPoints(userData.reward_points); // تحديث النقاط بناءً على البيانات المستلمة
                 } else {
-                  console.error('Failed to fetch user data');
+                  console.error("Failed to fetch user data");
                 }
               } else {
-                console.error('Chat ID not found for the specified user ID');
+                console.error("Chat ID not found for the specified user ID");
               }
             } else {
-              console.error('Failed to fetch chat ID');
+              console.error("Failed to fetch chat ID");
             }
           } catch (error) {
-            console.error('Error fetching chat ID:', error);
+            console.error("Error fetching chat ID:", error);
           }
         } else {
-          console.error('No user ID available.');
+          console.error("No user ID available.");
         }
       } else {
-        console.error('Telegram WebApp is not available.');
+        console.error("Telegram WebApp is not available.");
       }
     };
-  
+
     fetchData();
   }, []);
   const sendPointsToBot = async (newPoints: number) => {
@@ -97,48 +113,52 @@ const HomePage: React.FC = () => {
     if (window.Telegram && window.Telegram.WebApp) {
       const chatId = window.Telegram.WebApp.initDataUnsafe.user?.id;
       console.log(chatId);
-  
+
       if (chatId) {
         try {
           // إرسال النقاط و chat_id إلى الخادم الخلفي باستخدام fetch
-          const response = await fetch('https://plask.farsa.sa:5002/update_points', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              chat_id: chatId,
-              points: newPoints,
-            }),
-          });
-  
+          const response = await fetch(
+            "https://plask.farsa.sa:5002/update_points",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                chat_id: chatId,
+                points: newPoints,
+              }),
+            }
+          );
+
           const data = await response.json();
-  
+
           if (response.ok) {
-            console.log('Points updated successfully:', data);
+            console.log("Points updated successfully:", data);
           } else {
-            console.error('Error updating points:', data.message);
+            console.error("Error updating points:", data.message);
           }
         } catch (error) {
-          console.error('Error updating points:', error);
+          console.error("Error updating points:", error);
         }
       } else {
-        console.error('chat_id not found');
+        console.error("chat_id not found");
       }
     } else {
-      console.error('Telegram WebApp is not available');
+      console.error("Telegram WebApp is not available");
     }
   };
-  
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-    card.style.transform = `perspective(1000px) rotateX(${-y / 10}deg) rotateY(${x / 10}deg)`;
+    card.style.transform = `perspective(1000px) rotateX(${
+      -y / 10
+    }deg) rotateY(${x / 10}deg)`;
     setTimeout(() => {
-      card.style.transform = '';
+      card.style.transform = "";
     }, 100);
 
     const newPoints = points + pointsToAdd;
@@ -149,7 +169,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleAnimationEnd = (id: number) => {
-    setClicks((prevClicks) => prevClicks.filter(click => click.id !== id));
+    setClicks((prevClicks) => prevClicks.filter((click) => click.id !== id));
   };
 
   const calculateProgress = () => {
@@ -158,7 +178,8 @@ const HomePage: React.FC = () => {
     }
     const currentLevelMin = levelMinPoints[levelIndex];
     const nextLevelMin = levelMinPoints[levelIndex + 1];
-    const progress = ((points - currentLevelMin) / (nextLevelMin - currentLevelMin)) * 100;
+    const progress =
+      ((points - currentLevelMin) / (nextLevelMin - currentLevelMin)) * 100;
     return Math.min(progress, 100);
   };
 
@@ -182,7 +203,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const pointsPerSecond = Math.floor(profitPerHour / 3600);
     const interval = setInterval(() => {
-      setPoints(prevPoints => prevPoints + pointsPerSecond);
+      setPoints((prevPoints) => prevPoints + pointsPerSecond);
     }, 1000);
     return () => clearInterval(interval);
   }, [profitPerHour]);
@@ -202,11 +223,19 @@ const HomePage: React.FC = () => {
               <div className="w-full">
                 <div className="flex justify-between">
                   <p className="text-sm">{levelNames[levelIndex]}</p>
-                  <p className="text-sm">{levelIndex + 1} <span className="text-[#95908a]">/ {levelNames.length}</span></p>
+                  <p className="text-sm">
+                    {levelIndex + 1}{" "}
+                    <span className="text-[#95908a]">
+                      / {levelNames.length}
+                    </span>
+                  </p>
                 </div>
                 <div className="flex items-center mt-1 border-2 border-[#43433b] rounded-full">
                   <div className="w-full h-2 bg-[#43433b]/[0.6] rounded-full">
-                    <div className="progress-gradient h-2 rounded-full" style={{ width: `${calculateProgress()}%` }}></div>
+                    <div
+                      className="progress-gradient h-2 rounded-full"
+                      style={{ width: `${calculateProgress()}%` }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -214,10 +243,18 @@ const HomePage: React.FC = () => {
             <div className="flex items-center w-2/3 border-2 border-[#43433b] rounded-full px-4 py-[2px] bg-[#43433b]/[0.6] max-w-64">
               <div className="h-[32px] w-[2px] bg-[#43433b] mx-2"></div>
               <div className="flex-1 text-center">
-                <p className="text-xs text-[#85827d] font-medium">Profit per hour</p>
+                <p className="text-xs text-[#85827d] font-medium">
+                  Profit per hour
+                </p>
                 <div className="flex items-center justify-center space-x-1">
-                  <img src={dollarCoin} alt="Dollar Coin" className="w-[18px] h-[18px]" />
-                  <p className="text-sm">{formatProfitPerHour(profitPerHour)}</p>
+                  <img
+                    src={dollarCoin}
+                    alt="Dollar Coin"
+                    className="w-[18px] h-[18px]"
+                  />
+                  <p className="text-sm">
+                    {formatProfitPerHour(profitPerHour)}
+                  </p>
                   <Info size={20} className="text-[#43433b]" />
                 </div>
               </div>
@@ -243,7 +280,11 @@ const HomePage: React.FC = () => {
                 onClick={handleCardClick}
               >
                 <div className="w-full h-full rounded-full circle-inner">
-                  <img src={mainCharacter} alt="Main Character" className="w-full h-full" />
+                  <img
+                    src={mainCharacter}
+                    alt="Main Character"
+                    className="w-full h-full"
+                  />
                 </div>
               </div>
             </div>
@@ -258,7 +299,7 @@ const HomePage: React.FC = () => {
           style={{
             top: `${click.y - 42}px`,
             left: `${click.x - 28}px`,
-            animation: `float 1s ease-out`
+            animation: `float 1s ease-out`,
           }}
           onAnimationEnd={() => handleAnimationEnd(click.id)}
         >
@@ -271,15 +312,13 @@ const HomePage: React.FC = () => {
 
 interface User {
   user_id: number;
-  name: string;         // تأكد من إضافة هذا الحقل
+  name: string; // تأكد من إضافة هذا الحقل
   username: string;
   points: number;
   reward_points: number;
 }
 
 const FriendsPage: React.FC = () => {
-
-
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
@@ -291,9 +330,11 @@ const FriendsPage: React.FC = () => {
           name: user[1] || "No Name",
           reward_points: user[4] || 0,
         }));
-        
+
         // فرز المستخدمين حسب النقاط بترتيب تنازلي واختيار أعلى 5 فقط
-        const topUsers = usersData.sort((a: User, b: User) => b.reward_points - a.reward_points).slice(0, 4);
+        const topUsers = usersData
+          .sort((a: User, b: User) => b.reward_points - a.reward_points)
+          .slice(0, 4);
         setUsers(topUsers);
       })
       .catch((error) => console.error("Error fetching users:", error));
@@ -303,9 +344,13 @@ const FriendsPage: React.FC = () => {
     <div className="bg-black text-white min-h-screen flex flex-col items-center pt-10 pb-10">
       {/* صورة الشخصية الرئيسية */}
       <div className="w-[200px] h-[200px] rounded-full overflow-hidden circle-inner top_page">
-        <img src={mainCharacter} alt="Main Character" className="w-full h-full object-cover" />
+        <img
+          src={mainCharacter}
+          alt="Main Character"
+          className="w-full h-full object-cover"
+        />
       </div>
-      
+
       {/* العنوان */}
       <h3 className="text-2xl font-bold text-yellow-500 mt-4">Top Score</h3>
 
@@ -317,7 +362,9 @@ const FriendsPage: React.FC = () => {
               key={user.user_id}
               className="bg-gray-800 p-4 rounded-md flex justify-around items-center shadow-md"
             >
-              <span className="text-lg font-semibold text-yellow-500">{index + 1}</span>
+              <span className="text-lg font-semibold text-yellow-500">
+                {index + 1}
+              </span>
               <img src={dollarCoin} className="w-[50px] h-[50px]" alt="Coin" />
               <span className="text-lg font-semibold">{user.name}</span>
               <span className="text-lg font-semibold text-yellow-500">
@@ -333,8 +380,6 @@ const FriendsPage: React.FC = () => {
   );
 };
 
-
-
 const ExchangePage: React.FC = () => {
   return (
     <div className="bg-black text-white h-screen flex justify-center items-center">
@@ -343,7 +388,6 @@ const ExchangePage: React.FC = () => {
     </div>
   );
 };
-
 
 const EarnPage: React.FC = () => {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -360,70 +404,72 @@ const EarnPage: React.FC = () => {
     }
   }, []);
 
-  // جلب المهام اليومية من الباك-إند
   useEffect(() => {
     const fetchDailyTasks = async () => {
       if (!userId) return;
-  
+
       try {
-        // جلب قائمة المهام من الـ API
         const tasksResponse = await fetch(`https://plask.farsa.sa:5002/tasks`);
         const tasksData = await tasksResponse.json();
         console.log(userId);
-        // جلب حالة المهام للمستخدم من الـ API
-        const userTasksResponse = await fetch(`https://plask.farsa.sa:5002/user-tasks?user_id=${userId}`);
+        const userTasksResponse = await fetch(
+          `https://plask.farsa.sa:5002/user-tasks?user_id=${userId}`
+        );
         const userTasksData = await userTasksResponse.json();
-  
-        // تحويل البيانات التي تعيدها الـ API إلى صيغة يمكن استخدامها
+
         const updatedTasks = tasksData.tasks.map((task: any) => {
           const userTask = userTasksData.tasks.find(
             (userTask: any) => userTask.name_task === task.name_task
           );
-  
+
           return {
-            task_name: task.name_task, // اسم المهمة
-            task_points: task.task_point, // النقاط
-            completed_at: userTask?.completed_at || null, // حالة الإكمال
-            icon: task.name_task === "Daily reward" ? "🎁" :
-                  task.name_task === "Follow Twitter" ? "🐦" :
-                  task.name_task === "Join Telegram Channel" ? "📣" : "✔️",
+            task_name: task.name_task, 
+            task_points: task.task_point, //
+            completed_at: userTask?.completed_at || null, 
+            icon:
+              task.name_task === "Daily reward"
+                ? "🎁"
+                : task.name_task === "Follow Twitter"
+                ? "🐦"
+                : task.name_task === "Join Telegram Channel"
+                ? "📣"
+                : "✔️",
           };
         });
-  
+
         // تحديث الحالة بالمهام
         setTasks(updatedTasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     };
-  
+
     fetchDailyTasks();
   }, [userId]);
-  
-  
 
-  // إكمال مهمة
-  const completeTask = async (taskName: string) => {
-    if (!userId) return; // التحقق من وجود userId
-  
+  const completeTask = async (taskName: string,taskPoints:number,currentTime:string) => {
+    if (!userId) return; 
+
     try {
-      // طلب POST لإكمال المهمة
-      const response = await fetch("https://plask.farsa.sa:5002/complete-task", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, task_name: taskName, }), // إرسال user_id واسم المهمة
-      });
-  
+      console.log(taskPoints,currentTime,taskName);
+      const response = await fetch(
+        "https://plask.farsa.sa:5002/complete-task",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId, task_name: taskName }), 
+        }
+      );
+
       const data = await response.json();
-  
+
       if (response.ok) {
         console.log(data.message);
-  
-        // تحديث المهام بعد إكمال المهمة مع وقت الإتمام من قاعدة البيانات
+
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task.task_name === taskName
-              ? { ...task, completed_at: data.completed_at } // استخدام completed_at من الاستجابة
+              ? { ...task, completed_at: data.completed_at } 
               : task
           )
         );
@@ -434,7 +480,6 @@ const EarnPage: React.FC = () => {
       console.error("Error:", error);
     }
   };
-  
 
   return (
     <div className="bg-black text-white h-screen flex flex-col items-center px-4 pt-10 pb-10">
@@ -453,19 +498,23 @@ const EarnPage: React.FC = () => {
                 <span className="text-2xl">{task.icon}</span>
                 <div>
                   <h3 className="text-lg font-bold">{task.task_name}</h3>
-                  <p className="text-sm text-gray-400">Points: {task.task_points}</p>
+                  <p className="text-sm text-gray-400">
+                    Points: {task.task_points}
+                  </p>
                   <p className="text-sm text-gray-400">
                     Status: {task.completed_at ? "Completed" : "Pending"}
                   </p>
                 </div>
               </div>
               {!task.completed_at && (
-                <button
-                  onClick={() => completeTask(task.task_name)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                >
-                  Complete
-                </button>
+               <button
+               onClick={() => {
+                 const currentTime = new Date().toISOString(); // الحصول على الوقت الحالي بصيغة ISO
+                 completeTask(task.task_name, task.task_point, currentTime); 
+               }}
+               className="bg-blue-500 text-white px-4 py-2 rounded-md">
+               Complete
+             </button>
               )}
             </div>
           </div>
@@ -474,8 +523,6 @@ const EarnPage: React.FC = () => {
     </div>
   );
 };
-
-  
 
 const App: React.FC = () => {
   return (
@@ -491,11 +538,15 @@ const App: React.FC = () => {
         <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-[calc(100%-2rem)] max-w-xl bg-[#272a2f] flex justify-around items-center z-50 rounded-3xl text-xs">
           <div className="text-center text-[#85827d] w-1/5">
             <Link to="/">
-              <img src={binanceLogo} alt="Exchange" className="w-8 h-8 mx-auto" />
+              <img
+                src={binanceLogo}
+                alt="Exchange"
+                className="w-8 h-8 mx-auto"
+              />
               <p className="mt-1">Exchange</p>
             </Link>
           </div>
-          
+
           <div className="text-center text-[#85827d] w-1/5">
             <Link to="/friends">
               <Friends className="w-8 h-8 mx-auto" />
@@ -516,15 +567,3 @@ const App: React.FC = () => {
 
 export default App;
 
-
-
-
-
-
-
-
-
-
-
-
-// org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=2G -XX:+HeapDumpOnOutOfMemoryError
