@@ -447,11 +447,11 @@ const EarnPage: React.FC = () => {
     fetchDailyTasks();
   }, [userId]);
 
-  const completeTask = async (taskName: string,taskPoints:number,currentTime:string) => {
+  const completeTask = async (taskName: string,currentTime:string) => {
     if (!userId) return; 
 
     try {
-      console.log(taskPoints,taskName);
+      console.log(taskName);
       const response = await fetch(
         "https://plask.farsa.sa:5002/complete-task",
         {
@@ -510,7 +510,7 @@ const EarnPage: React.FC = () => {
                <button
                onClick={() => {
                  const currentTime = new Date().toISOString(); // الحصول على الوقت الحالي بصيغة ISO
-                 completeTask(task.task_name, task.task_point, currentTime); 
+                 completeTask(task.task_name, currentTime); 
                }}
                className="bg-blue-500 text-white px-4 py-2 rounded-md">
                Complete
