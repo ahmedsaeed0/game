@@ -451,7 +451,7 @@ const EarnPage: React.FC = () => {
     if (!userId) return; 
 
     try {
-      console.log(taskName);
+      console.log(userId);
       const response = await fetch(
         "https://plask.farsa.sa:5002/complete-task",
         {

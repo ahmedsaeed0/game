@@ -1,0 +1,30 @@
+@app.route('/complete-task', methods=['POST'])
+def complete_task():
+    data = request.json
+    user_id = data.get('user_id')        # معرف المستخدم
+    task_name = data.get('task_name')    # اسم المهمة
+
+    if not user_id or not task_name:
+        return jsonify({"error": "user_id and task_name are required"}), 400
+
+    try:
+        # جلب النقاط للمهمة
+        point = database.get_point(task_name)
+        if not point:
+            return jsonify({"error": "Task not found"}), 404
+
+        # تحديث حالة المهمة
+        updated_task = database.complete_task(user_id, task_name, point)
+        if not updated_task:
+            return jsonify({"error": "Failed to complete task"}), 500
+
+        # تحديث نقاط المستخدم
+        database.update_user_points(user_id, point)
+
+        return jsonify({
+            "message": "Task completed successfully",
+            "completed_at": updated_task["completed_at"]
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
