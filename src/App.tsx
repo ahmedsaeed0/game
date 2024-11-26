@@ -409,7 +409,7 @@ const EarnPage: React.FC = () => {
       if (!userId) return;
 
       try {
-        const tasksResponse = await fetch(`https://plask.farsa.sa:5002/tasks`);
+        const tasksResponse = await fetch(`https://plask.farsa.sa:5002/tasks?user_id=${userId}`);
         const tasksData = await tasksResponse.json();
         console.log(userId);
         const userTasksResponse = await fetch(
