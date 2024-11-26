@@ -447,7 +447,7 @@ const EarnPage: React.FC = () => {
     fetchDailyTasks();
   }, [userId]);
 
-  const completeTask = async (taskName: string,currentTime:string) => {
+  const completeTask = async (taskName: string) => {
     if (!userId) return; 
 
     try {
@@ -460,7 +460,6 @@ const EarnPage: React.FC = () => {
           body: JSON.stringify({ user_id: userId, task_name: taskName }), 
         }
       );
-      console.log(currentTime);
       const data = await response.json();
 
       if (response.ok) {
@@ -480,6 +479,20 @@ const EarnPage: React.FC = () => {
       console.error("Error:", error);
     }
   };
+
+  function isTaskCompletedToday(completedAt:any) {
+    if (!completedAt) return false; // إذا لم يتم إكمال المهمة بعد
+  
+    const completedDate = new Date(completedAt);
+    const today = new Date();
+  
+    // مقارنة السنة والشهر واليوم
+    return (
+      completedDate.getFullYear() === today.getFullYear() &&
+      completedDate.getMonth() === today.getMonth() &&
+      completedDate.getDate() === today.getDate()
+    );
+  }
 
   return (
     <div className="bg-black text-white h-screen flex flex-col items-center px-4 pt-10 pb-10">
@@ -506,16 +519,19 @@ const EarnPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-              {!task.completed_at && (
-               <button
-               onClick={() => {
-                 const currentTime = new Date().toISOString(); // الحصول على الوقت الحالي بصيغة ISO
-                 completeTask(task.task_name, currentTime); 
-               }}
-               className="bg-blue-500 text-white px-4 py-2 rounded-md">
-               Complete
-             </button>
+             {!task.completed_at || !isTaskCompletedToday(task.completed_at) ? (
+                <button
+                  onClick={() => {
+                    completeTask(task.task_name); 
+                  }}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                >
+                  Complete
+                </button>
+              ) : (
+                <span className="text-gray-500">Task already completed today</span>
               )}
+
             </div>
           </div>
         ))}
